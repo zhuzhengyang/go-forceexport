@@ -3,7 +3,9 @@
 go-forceexport is a golang package that allows access to any module-level
 function, even ones that are not exported. You give it the string name of a
 function , like `"time.now"`, and gives you a function value that calls that
-function.
+function. More generally, it can be used to achieve something like reflection on
+top-level functions, whereas the `reflect` package only lets you access methods
+by name.
 
 As you might expect, this library is **unsafe** and **fragile** and probably
 shouldn't be used in production. See "Use cases and pitfalls" below.
