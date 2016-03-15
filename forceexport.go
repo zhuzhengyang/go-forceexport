@@ -13,11 +13,11 @@ import (
 // value that calls the specified function. If the specified function does not
 // exist, outFuncPtr is not set and an error is returned.
 func GetFunc(outFuncPtr interface{}, name string) error {
-	funcPtr, err := FindFuncWithName(name)
+	codePtr, err := FindFuncWithName(name)
 	if err != nil {
 		return err
 	}
-	CreateFuncForCodePtr(outFuncPtr, funcPtr)
+	CreateFuncForCodePtr(outFuncPtr, codePtr)
 	return nil
 }
 
