@@ -60,6 +60,10 @@ the foot:
   create them at all, for example due to inlining or dead code analysis. This
   means that functions may not show up like you expect, and new versions of the
   compiler may cause functions to suddenly disappear.
+* If the function you want to use relies on unexported types, you won't be able
+  to trivially use it. However, you can sometimes work around this by defining
+  equivalent copies of those types that you can use, but that approach has its
+  own set of dangers.
 
 ## How it works
 
