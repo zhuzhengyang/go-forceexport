@@ -1,8 +1,8 @@
 package forceexport
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestTimeNow(t *testing.T) {
@@ -38,7 +38,7 @@ func TestAddOne(t *testing.T) {
 }
 
 func TestGetSelf(t *testing.T) {
-	var getFunc func (interface{}, string) error
+	var getFunc func(interface{}, string) error
 	err := GetFunc(&getFunc, "github.com/alangpierce/go-forceexport.GetFunc")
 	if err != nil {
 		t.Error("Error: %s", err)

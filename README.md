@@ -44,8 +44,8 @@ GetFunc(&getFunc, "github.com/alangpierce/go-forceexport.GetFunc")
 This library is most useful for development and hack projects. For example, you
 might use it to track down why the standard library isn't behaving as you
 expect, or you might use it to try out a standard library function to see if it
-works. You could also try using it in production; just make sure you're aware of
-the risks.
+works, then later factor the code to be less fragile. You could also try using
+it in production; just make sure you're aware of the risks.
 
 There are lots of things to watch out for and ways to shoot yourself in
 the foot:
@@ -53,12 +53,13 @@ the foot:
   behavior that will likely cause a runtime panic. The library makes no attempt
   to warn you in this case.
 * Calling unexported functions is inherently fragile because the function won't
-  have a stable API.
+  have any stability guarantees.
 * The implementation relies on the details of internal Go data structures, so
   later versions of Go might break this library.
 * Since the compiler doesn't expect unexported symbols to be used, it might not
   create them at all, for example due to inlining or dead code analysis. This
-  behavior might change with new versions of the compiler.
+  means that functions may not show up like you expect, and new versions of the
+  compiler may cause functions to suddenly disappear.
 
 ## How it works
 
@@ -67,16 +68,17 @@ here's a friendlier explanation:
 
 The code uses the `go:linkname` compiler directive to get access to the
 `runtime.firstmoduledata` symbol, which is an internal data structure created by
-the linker that's used to power functions like `runtime.FuncForPC`. (Using
+the linker that's used by functions like `runtime.FuncForPC`. (Using
 `go:linkname` is an alternate way to access unexported functions/values, but it
 has other gotchas and can't be used dynamically.)
 
-Similar to the implementation `runtime.FuncForPC`, the code walks the function
-definitions until it finds one with a matching name, then gets its code pointer.
+Similar to the implementation of `runtime.FuncForPC`, the code walks the
+function definitions until it finds one with a matching name, then gets its code
+pointer.
 
 From there, it creates a function object from the code pointer by calling
 `reflect.MakeFunc` and using `unsafe.Pointer` to swap out the function object's
-code pointer.
+code pointer with the desired one.
 
 Needless to say, it's a scary hack, but it seems to work!
 
