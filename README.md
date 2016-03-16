@@ -36,8 +36,8 @@ sec, nsec := timeNow()
 The string you give should be the fully-qualified name. For example, here's
 `GetFunc` getting itself.
 
-```
-var getFunc func (interface{}, string) error
+```go
+var getFunc func(interface{}, string) error
 GetFunc(&getFunc, "github.com/alangpierce/go-forceexport.GetFunc")
 ```
 
