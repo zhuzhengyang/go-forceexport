@@ -101,17 +101,48 @@ type Moduledata struct {
 	bss, ebss             uintptr
 	noptrbss, enoptrbss   uintptr
 	end, gcdata, gcbss    uintptr
+	types, etypes         uintptr
 
-	// Original type was []*_type
-	typelinks []interface{}
+	textsectmap []Textsect
+	typelinks   []int32 // offsets from types
+	// Original type was []*itab
+	itablinks []*struct{}
+
+	ptab []PtabEntry
+
+	pluginpath string
+	// Original type was []modulehash
+	pkghashes []interface{}
 
 	modulename string
 	// Original type was []modulehash
 	modulehashes []interface{}
 
+	hasmain uint8 // 1 if module contains the main function, 0 otherwise
+
 	gcdatamask, gcbssmask Bitvector
 
+	// Original type was map[typeOff]*_type
+	typemap map[typeOff]*struct{}
+
+	bad bool // module failed to load and should be ignored
+
 	next *Moduledata
+}
+
+type Textsect struct {
+	vaddr    uintptr // prelinked section vaddr
+	length   uintptr // section length
+	baseaddr uintptr // relocated section address
+}
+
+type nameOff int32
+type typeOff int32
+type textOff int32
+
+type PtabEntry struct {
+	name nameOff
+	typ  typeOff
 }
 
 type Functab struct {
