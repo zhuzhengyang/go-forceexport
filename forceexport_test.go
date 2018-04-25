@@ -75,3 +75,12 @@ func TestInvalidFunc(t *testing.T) {
 		t.Error("Expected a nil function.")
 	}
 }
+
+// BenchmarkGetMainInit check how long it takes to find the symbol main.init,
+// which is typically the last func symbol(by experiment).
+func BenchmarkGetMainInit(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		var main_init func()
+		GetFunc(&main_init, "main.init")
+	}
+}
