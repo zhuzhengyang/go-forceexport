@@ -59,6 +59,21 @@ func FindFuncWithName(name string) (uintptr, error) {
 	for moduleData := &Firstmoduledata; moduleData != nil; moduleData = moduleData.next {
 		for _, ftab := range moduleData.ftab {
 			f := (*runtime.Func)(unsafe.Pointer(&moduleData.pclntable[ftab.funcoff]))
+
+			// (*Func).Name() assumes that the *Func was created by some exported
+			// method that would have returned a nil *Func pointer IF the
+			// desired function's datap resolves to nil.
+			// (a.k.a. if findmoduledatap(pc) returns nil)
+			// Since the last element of the moduleData.ftab has a datap of nil
+			// (from experimentation), .Name() Seg Faults on the last element.
+			//
+			// If we instead ask the external function FuncForPc to fetch
+			// our *Func object, it will check the datap first and give us
+			// a proper nil *Func, that .Name() understands.
+			// The down side of doing this is that internally, the
+			// findmoduledatap(pc) function is called twice for every element
+			// we loop over.
+			f = runtime.FuncForPC(f.Entry())
 			if f.Name() == name {
 				return f.Entry(), nil
 			}
