@@ -41,7 +41,7 @@ func TestGetSelf(t *testing.T) {
 	var getFunc func(interface{}, string) error
 	err := GetFunc(&getFunc, "github.com/alangpierce/go-forceexport.GetFunc")
 	if err != nil {
-		t.Error("Error: %s", err)
+		t.Errorf("Error: %s", err)
 	}
 	// The two functions should share the same code pointer, so they should
 	// have the same string representation.
@@ -51,7 +51,7 @@ func TestGetSelf(t *testing.T) {
 	// Call it again on itself!
 	err = getFunc(&getFunc, "github.com/alangpierce/go-forceexport.GetFunc")
 	if err != nil {
-		t.Error("Error: %s", err)
+		t.Errorf("Error: %s", err)
 	}
 	if fmt.Sprint(getFunc) != fmt.Sprint(GetFunc) {
 		t.Errorf("Expected ")
