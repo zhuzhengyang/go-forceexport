@@ -57,9 +57,12 @@ func CreateFuncForCodePtr(outFuncPtr interface{}, codePtr uintptr) {
 // catastrophically).
 func FindFuncWithName(name string) (uintptr, error) {
 	for moduleData := &Firstmoduledata; moduleData != nil; moduleData = moduleData.next {
-		for _, ftab := range moduleData.ftab {
+		for index, ftab := range moduleData.ftab {
 			f := (*runtime.Func)(unsafe.Pointer(&moduleData.pclntable[ftab.funcoff]))
-			if f.Name() == name {
+			if index == len(moduleData.ftab)-1 {
+				break
+			}
+			if f != nil && f.Name() == name {
 				return f.Entry(), nil
 			}
 		}
@@ -95,12 +98,10 @@ type Moduledata struct {
 	ptab []ptabEntry
 
 	pluginpath string
-	// Original type was []modulehash
-	pkghashes []interface{}
+	pkghashes  []modulehash
 
-	modulename string
-	// Original type was []modulehash
-	modulehashes []interface{}
+	modulename   string
+	modulehashes []modulehash
 
 	hasmain uint8 // 1 if module contains the main function, 0 otherwise
 
@@ -175,4 +176,10 @@ type name struct {
 type imethod struct {
 	name nameOff
 	ityp typeOff
+}
+
+type modulehash struct {
+	modulename   string
+	linktimehash string
+	runtimehash  *string
 }

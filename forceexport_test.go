@@ -76,11 +76,11 @@ func TestInvalidFunc(t *testing.T) {
 	}
 }
 
-// BenchmarkGetMainInit check how long it takes to find the symbol main.init,
+// BenchmarkGetMain check how long it takes to find the symbol main.main,
 // which is typically the last func symbol(by experiment).
-func BenchmarkGetMainInit(b *testing.B) {
+func BenchmarkGetMain(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		var main_init func()
-		GetFunc(&main_init, "main.init")
+		GetFunc(&main_init, "main.main")
 	}
 }
