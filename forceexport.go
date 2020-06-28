@@ -75,7 +75,7 @@ var Firstmoduledata Moduledata
 
 type Moduledata struct {
 	pclntable    []byte
-	ftab         []Functab
+	ftab         []functab
 	filetab      []uint32
 	findfunctab  uintptr
 	minpc, maxpc uintptr
@@ -86,25 +86,93 @@ type Moduledata struct {
 	bss, ebss             uintptr
 	noptrbss, enoptrbss   uintptr
 	end, gcdata, gcbss    uintptr
+	types, etypes         uintptr
 
-	// Original type was []*_type
-	typelinks []interface{}
+	textsectmap []textsect
+	typelinks   []int32 // offsets from types
+	itablinks   []*itab
+
+	ptab []ptabEntry
+
+	pluginpath string
+	// Original type was []modulehash
+	pkghashes []interface{}
 
 	modulename string
 	// Original type was []modulehash
 	modulehashes []interface{}
 
-	gcdatamask, gcbssmask Bitvector
+	hasmain uint8 // 1 if module contains the main function, 0 otherwise
+
+	gcdatamask, gcbssmask bitvector
+
+	typemap map[typeOff]*_type // offset to *_rtype in previous module
+
+	bad bool // module failed to load and should be ignored
 
 	next *Moduledata
 }
 
-type Functab struct {
+type functab struct {
 	entry   uintptr
 	funcoff uintptr
 }
 
-type Bitvector struct {
+type textsect struct {
+	vaddr    uintptr // prelinked section vaddr
+	length   uintptr // section length
+	baseaddr uintptr // relocated section address
+}
+
+type bitvector struct {
 	n        int32 // # of bits
 	bytedata *uint8
+}
+
+type ptabEntry struct {
+	name nameOff
+	typ  typeOff
+}
+type typeOff int32
+type nameOff int32
+type tflag uint8
+type _type struct {
+	size       uintptr
+	ptrdata    uintptr // size of memory prefix holding all pointers
+	hash       uint32
+	tflag      tflag
+	align      uint8
+	fieldAlign uint8
+	kind       uint8
+	// function for comparing objects of this type
+	// (ptr to object A, ptr to object B) -> ==?
+	equal func(unsafe.Pointer, unsafe.Pointer) bool
+	// gcdata stores the GC type data for the garbage collector.
+	// If the KindGCProg bit is set in kind, gcdata is a GC program.
+	// Otherwise it is a ptrmask bitmap. See mbitmap.go for details.
+	gcdata    *byte
+	str       nameOff
+	ptrToThis typeOff
+}
+type itab struct {
+	inter *interfacetype
+	_type *_type
+	hash  uint32 // copy of _type.hash. Used for type switches.
+	_     [4]byte
+	fun   [1]uintptr // variable sized. fun[0]==0 means _type does not implement inter.
+}
+
+type interfacetype struct {
+	typ     _type
+	pkgpath name
+	mhdr    []imethod
+}
+
+type name struct {
+	bytes *byte
+}
+
+type imethod struct {
+	name nameOff
+	ityp typeOff
 }

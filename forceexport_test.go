@@ -35,7 +35,7 @@ func TestAddOne(t *testing.T) {
 	}
 
 	var addOneFunc func(x int) int
-	err := GetFunc(&addOneFunc, "github.com/alangpierce/go-forceexport.addOne")
+	err := GetFunc(&addOneFunc, "github.com/zhuzhengyang/go-forceexport.addOne")
 	if err != nil {
 		t.Error("Expected nil error.")
 	}
@@ -46,7 +46,7 @@ func TestAddOne(t *testing.T) {
 
 func TestGetSelf(t *testing.T) {
 	var getFunc func(interface{}, string) error
-	err := GetFunc(&getFunc, "github.com/alangpierce/go-forceexport.GetFunc")
+	err := GetFunc(&getFunc, "github.com/zhuzhengyang/go-forceexport.GetFunc")
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}
@@ -56,7 +56,7 @@ func TestGetSelf(t *testing.T) {
 		t.Errorf("Expected ")
 	}
 	// Call it again on itself!
-	err = getFunc(&getFunc, "github.com/alangpierce/go-forceexport.GetFunc")
+	err = getFunc(&getFunc, "github.com/zhuzhengyang/go-forceexport.GetFunc")
 	if err != nil {
 		t.Errorf("Error: %s", err)
 	}

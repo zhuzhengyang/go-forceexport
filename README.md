@@ -16,7 +16,7 @@ an update to this paragraph.
 
 ## Installation
 
-`$ go get github.com/alangpierce/go-forceexport`
+`$ go get github.com/zhuzhengyang/go-forceexport`
 
 ## Usage
 
@@ -38,7 +38,7 @@ The string you give should be the fully-qualified name. For example, here's
 
 ```go
 var getFunc func(interface{}, string) error
-GetFunc(&getFunc, "github.com/alangpierce/go-forceexport.GetFunc")
+GetFunc(&getFunc, "github.com/zhuzhengyang/go-forceexport.GetFunc")
 ```
 
 ## Use cases and pitfalls
