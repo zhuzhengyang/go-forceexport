@@ -76,6 +76,29 @@ func TestInvalidFunc(t *testing.T) {
 	}
 }
 
+type Foo struct {
+}
+
+//go:noinline
+func (f *Foo) bar() string {
+	return "o bar"
+}
+
+func TestPrivateMemberFunc(t *testing.T) {
+	f := new(Foo)
+	f.bar()
+	var barName = "github.com/zhuzhengyang/go-forceexport.(*Foo).bar"
+	var bar func(r *Foo) string
+	err := GetFunc(&bar, barName)
+	if err != nil {
+		t.Error(err)
+	}
+	str := bar(f)
+	if str != "o bar" {
+		t.Error("get PrivateMemberFunc failed")
+	}
+}
+
 // BenchmarkGetMain check how long it takes to find the symbol main.main,
 // which is typically the last func symbol(by experiment).
 func BenchmarkGetMain(b *testing.B) {
