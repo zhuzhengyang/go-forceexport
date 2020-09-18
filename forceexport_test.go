@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"runtime"
 	"testing"
+
+	"github.com/zhuzhengyang/helper"
 )
 
 // funcName resolves the name of a given function
@@ -76,47 +78,29 @@ func TestInvalidFunc(t *testing.T) {
 	}
 }
 
-type Foo struct {
-}
-
-func (f *Foo) Init() {
-	f.bar()
-	f.Public()
-}
-
-//go:noinline
-func (f *Foo) bar() string {
-	return "o bar"
-}
-
-//go:noinline
-func (f *Foo) Public() string {
-	return "o public"
-}
-
 func TestPrivateMemberFunc(t *testing.T) {
-	f := new(Foo)
+	f := new(helper.Foo)
 	f.Init()
-	var barName = "github.com/zhuzhengyang/go-forceexport.(*Foo).bar"
-	var bar func(r *Foo) string
-	err := GetFunc(&bar, barName)
+	var publicName = "github.com/zhuzhengyang/helper.(*Foo).Public"
+	var public func(r *helper.Foo) string
+	err := GetFunc(&public, publicName)
 	if err != nil {
 		t.Error(err)
 	}
-	str := bar(f)
-	if str != "o bar" {
-		t.Error("get PrivateMemberFunc failed")
-	}
-
-	var publicName = "github.com/zhuzhengyang/go-forceexport.(*Foo).Public"
-	var public func(r *Foo) string
-	err = GetFunc(&public, publicName)
-	if err != nil {
-		t.Error(err)
-	}
-	str = public(f)
+	str := public(f)
 	if str != "o public" {
 		t.Error("get PublicMemberFunc failed")
+	}
+
+	var barName = "github.com/zhuzhengyang/helper.(*Foo).bar"
+	var bar func(r *helper.Foo) string
+	err = GetFunc(&bar, barName)
+	if err != nil {
+		t.Error(err)
+	}
+	str = bar(f)
+	if str != "o bar" {
+		t.Error("get PrivateMemberFunc failed")
 	}
 }
 
