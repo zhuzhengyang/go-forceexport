@@ -79,14 +79,24 @@ func TestInvalidFunc(t *testing.T) {
 type Foo struct {
 }
 
+func (f *Foo) Init() {
+	f.bar()
+	f.Public()
+}
+
 //go:noinline
 func (f *Foo) bar() string {
 	return "o bar"
 }
 
+//go:noinline
+func (f *Foo) Public() string {
+	return "o public"
+}
+
 func TestPrivateMemberFunc(t *testing.T) {
 	f := new(Foo)
-	f.bar()
+	f.Init()
 	var barName = "github.com/zhuzhengyang/go-forceexport.(*Foo).bar"
 	var bar func(r *Foo) string
 	err := GetFunc(&bar, barName)
@@ -96,6 +106,17 @@ func TestPrivateMemberFunc(t *testing.T) {
 	str := bar(f)
 	if str != "o bar" {
 		t.Error("get PrivateMemberFunc failed")
+	}
+
+	var publicName = "github.com/zhuzhengyang/go-forceexport.(*Foo).Public"
+	var public func(r *Foo) string
+	err = GetFunc(&public, publicName)
+	if err != nil {
+		t.Error(err)
+	}
+	str = public(f)
+	if str != "o public" {
+		t.Error("get PublicMemberFunc failed")
 	}
 }
 
